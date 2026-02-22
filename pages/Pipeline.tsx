@@ -106,67 +106,46 @@ function LeadCard({
       onDragEnd={onDragEnd}
       onClick={onClick}
       className={cn(
-        "bg-[hsl(var(--card))] border border-[hsl(var(--card-border))] rounded-lg p-3 cursor-grab active:cursor-grabbing transition-all shadow-sm hover:shadow-md relative group",
+        "bg-white border border-gray-100 rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all shadow-sm hover:shadow-md relative group",
         isDragging && "opacity-50 rotate-2 scale-95",
       )}
     >
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <GripVertical
-          size={14}
-          className="text-[hsl(var(--muted-foreground))]"
-        />
+      <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <GripVertical size={13} className="text-gray-300" />
       </div>
       <div className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <h4 className="font-medium text-[hsl(var(--foreground))] text-sm line-clamp-1">
-            {lead.name}
-          </h4>
-          {hasNotes && (
-            <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--primary))] shrink-0 mt-1" />
-          )}
-        </div>
+        <h4 className="font-semibold text-gray-800 text-sm leading-tight pr-4 line-clamp-1">
+          {lead.name}
+        </h4>
 
         {(lead.workEmail || lead.email) && (
-          <div className="flex items-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))]">
-            <Mail size={12} />
+          <div className="flex items-center gap-1.5 text-xs text-gray-400">
+            <Mail size={11} />
             <span className="truncate">{lead.workEmail || lead.email}</span>
           </div>
         )}
 
         {lead.phoneNumber && (
-          <div className="flex items-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))]">
-            <span className="text-[10px] font-bold bg-[hsl(var(--accent))] px-1 rounded text-[hsl(var(--foreground))] opacity-70">
-              +91
-            </span>
+          <div className="flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="text-[10px] font-bold">+91</span>
             <span>{lead.phoneNumber}</span>
           </div>
         )}
 
         {lead.category && (
-          <div className="mt-1">
-            <span className="text-[10px] font-medium text-[hsl(var(--primary))] bg-[hsl(var(--primary))]/10 px-2 py-0.5 rounded-full">
-              {lead.category}
-            </span>
-          </div>
+          <span className="inline-flex text-[10px] font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">
+            {lead.category}
+          </span>
         )}
 
         {(lead.budget || lead.revenueRange) && (
-          <div className="flex items-center gap-1.5 text-xs text-[hsl(var(--foreground))] font-medium pt-1">
-            <DollarSign
-              size={12}
-              className="text-[hsl(var(--muted-foreground))]"
-            />
+          <div className="flex items-center gap-1 text-xs text-gray-700 font-medium">
+            <DollarSign size={11} className="text-gray-400" />
             {lead.budget || lead.revenueRange}
           </div>
         )}
 
-        {(lead.goals || lead.message) && (
-          <p className="text-xs text-[hsl(var(--muted-foreground))] line-clamp-2 italic">
-            "{lead.goals || lead.message}"
-          </p>
-        )}
-
-        <div className="flex items-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))] pt-1 border-t border-[hsl(var(--border))]">
+        <div className="flex items-center gap-1 text-[11px] text-gray-400 pt-1.5 mt-1 border-t border-gray-50">
           <Calendar size={10} />
           <span>{formatDateShort(lead.createdAt || lead.timestamp)}</span>
         </div>
@@ -215,26 +194,34 @@ function PipelineColumn({
     onDrop(e, id);
   };
 
+  const COLUMN_COLORS: Record<string, string> = {
+    leads: "bg-gray-400",
+    contacted: "bg-blue-400",
+    won: "bg-green-400",
+    lost: "bg-red-400",
+  };
+
   return (
     <div
       className={cn(
-        "flex flex-col min-w-[280px] w-[280px] h-full transition-colors",
-        isDragOver && "bg-[hsl(var(--accent))]/20",
+        "flex flex-col min-w-[280px] w-[280px] rounded-xl bg-gray-50 border border-gray-100 overflow-hidden transition-colors",
+        isDragOver && "bg-blue-50 border-blue-200",
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="flex items-center justify-between gap-2 p-3 sticky top-0 bg-[hsl(var(--background))] z-10 border-b border-[hsl(var(--border))]">
-        <h3 className="text-sm font-medium text-[hsl(var(--foreground))]">
-          {title}
-        </h3>
-        <span className="text-xs font-mono bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] px-2 py-0.5 rounded-full">
+      <div className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b border-gray-100">
+        <div className="flex items-center gap-2">
+          <span className={cn("w-2 h-2 rounded-full", COLUMN_COLORS[id])} />
+          <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
+        </div>
+        <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
           {leads.length}
         </span>
       </div>
 
-      <div className="flex-1 p-3 space-y-3 overflow-y-auto">
+      <div className="flex-1 p-3 space-y-2.5 overflow-y-auto">
         {leads.length > 0 ? (
           leads.map((lead) => (
             <div key={lead.id}>
@@ -253,9 +240,8 @@ function PipelineColumn({
         ) : (
           <div
             className={cn(
-              "flex items-center justify-center h-24 text-sm text-[hsl(var(--muted-foreground))] border border-dashed border-[hsl(var(--border))] rounded-md transition-colors",
-              isDragOver &&
-                "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/10",
+              "flex items-center justify-center h-24 text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl transition-colors",
+              isDragOver && "border-blue-300 bg-blue-50 text-blue-400",
             )}
           >
             {isDragOver ? "Drop here" : "No leads"}
@@ -293,28 +279,26 @@ function LeadDetail({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
         onClick={onClose}
       />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="bg-[hsl(var(--card))] border border-[hsl(var(--card-border))] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6 space-y-6">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-[hsl(var(--foreground))]">
-                  {lead.name}
-                </h2>
+                <h2 className="text-lg font-bold text-gray-900">{lead.name}</h2>
                 <div className="flex flex-col gap-1 mt-1">
                   {(lead.workEmail || lead.email) && (
-                    <p className="text-sm text-[hsl(var(--muted-foreground))] flex items-center gap-2">
-                      <Mail size={14} /> {lead.workEmail || lead.email}
+                    <p className="text-sm text-gray-500 flex items-center gap-2">
+                      <Mail size={13} /> {lead.workEmail || lead.email}
                     </p>
                   )}
                   {lead.phoneNumber && (
-                    <p className="text-sm text-[hsl(var(--muted-foreground))] flex items-center gap-2">
+                    <p className="text-sm text-gray-500 flex items-center gap-2">
                       <span className="text-xs font-bold">+91</span>{" "}
                       {lead.phoneNumber}
                     </p>
@@ -784,8 +768,11 @@ export const Pipeline: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[hsl(var(--background))]">
-        <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--muted-foreground))]" />
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-7 w-7 animate-spin text-orange-500" />
+          <p className="text-sm text-gray-500">Loading pipeline…</p>
+        </div>
       </div>
     );
   }
@@ -799,55 +786,44 @@ export const Pipeline: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">
             Leads
           </h1>
-          <p className="text-sm sm:text-base text-[hsl(var(--muted-foreground))] mt-1">
-            Manage and view your form submissions.
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+            Pipeline
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Drag and drop leads between stages
           </p>
         </div>
 
-        <div className="flex flex-col xl:flex-row items-center gap-4">
-          <div className="flex items-center gap-2 bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg p-1">
-            <div className="flex items-center gap-2 px-2 border-r border-[hsl(var(--border))] mr-1">
-              <Filter
-                size={14}
-                className="text-[hsl(var(--muted-foreground))]"
-              />
-              <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                Type:
-              </span>
-            </div>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Form type filter */}
+          <div className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-3 py-1.5">
+            <Filter size={13} className="text-gray-400" />
             <select
-              className="bg-transparent text-sm border-none focus:ring-0 text-[hsl(var(--foreground))] cursor-pointer pr-8 py-1"
+              className="bg-transparent text-sm text-gray-700 border-none outline-none cursor-pointer pr-4"
               value={formTypeFilter}
               onChange={(e) => setFormTypeFilter(e.target.value)}
             >
-              <option value="all">All Submissions</option>
+              <option value="all">All Types</option>
               <option value="book-demo">Book Demo</option>
               <option value="contact">Contact Us</option>
             </select>
           </div>
 
-          <div className="flex items-center gap-2 bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg p-1">
-            <div className="flex items-center gap-2 px-2">
-              <Calendar
-                size={14}
-                className="text-[hsl(var(--muted-foreground))]"
-              />
-              <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                Filter by Date:
-              </span>
-            </div>
+          {/* Date range filter */}
+          <div className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-3 py-1.5">
+            <Calendar size={13} className="text-gray-400" />
             <input
               type="date"
-              className="bg-transparent text-sm border-none focus:ring-0 text-[hsl(var(--foreground))] dark:text-[hsl(var(--foreground))] [color-scheme:light] dark:[color-scheme:dark] placeholder:text-[hsl(var(--muted-foreground))]"
+              className="bg-transparent text-sm text-gray-700 border-none outline-none [color-scheme:light] cursor-pointer"
               value={dateRange.start}
               onChange={(e) =>
                 setDateRange((prev) => ({ ...prev, start: e.target.value }))
               }
             />
-            <span className="text-[hsl(var(--muted-foreground))]">-</span>
+            <span className="text-gray-300">–</span>
             <input
               type="date"
-              className="bg-transparent text-sm border-none focus:ring-0 text-[hsl(var(--foreground))] dark:text-[hsl(var(--foreground))] [color-scheme:light] dark:[color-scheme:dark] placeholder:text-[hsl(var(--muted-foreground))]"
+              className="bg-transparent text-sm text-gray-700 border-none outline-none [color-scheme:light] cursor-pointer"
               value={dateRange.end}
               onChange={(e) =>
                 setDateRange((prev) => ({ ...prev, end: e.target.value }))
@@ -856,9 +832,9 @@ export const Pipeline: React.FC = () => {
             {(dateRange.start || dateRange.end) && (
               <button
                 onClick={() => setDateRange({ start: "", end: "" })}
-                className="p-1 hover:bg-[hsl(var(--accent))] rounded-md text-[hsl(var(--muted-foreground))]"
+                className="text-gray-400 hover:text-gray-600 ml-1 transition-colors"
               >
-                <X size={14} />
+                <X size={13} />
               </button>
             )}
           </div>
@@ -866,9 +842,9 @@ export const Pipeline: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-amber-50 dark:bg-amber-950/50 border-b border-amber-200 dark:border-amber-800 px-4 py-3 shrink-0">
-          <div className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-200">
-            <AlertCircle className="h-4 w-4" />
+        <div className="bg-amber-50 border-b border-amber-200 px-5 py-3 shrink-0">
+          <div className="flex items-center gap-2 text-sm text-amber-700">
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         </div>
@@ -877,8 +853,8 @@ export const Pipeline: React.FC = () => {
       <div
         ref={scrollContainerRef}
         className={cn(
-          "flex gap-4 flex-1 overflow-x-auto p-6 pb-0 select-none",
-          isDragging ? "cursor-grabbing" : "cursor-grab",
+          "flex gap-4 flex-1 overflow-x-auto p-6 select-none",
+          isDragging ? "cursor-grabbing" : "cursor-default",
         )}
         onMouseDown={handleMouseDown}
         onContextMenu={(e) => {
@@ -902,14 +878,10 @@ export const Pipeline: React.FC = () => {
         ))}
       </div>
 
-      {/* Tip UI */}
-      <div className="flex-none p-2 border-t border-[hsl(var(--border))] bg-[hsl(var(--background))]/70 backdrop-blur-sm flex items-center justify-center text-xs text-[hsl(var(--muted-foreground))] font-medium z-30 relative">
-        <MousePointer size={14} className="mr-2" />
-        Tip: Drag cards between columns or hold{" "}
-        <kbd className="mx-1 px-1 py-0.5 rounded-md bg-[hsl(var(--muted))] border border-[hsl(var(--border))] text-[hsl(var(--foreground))] font-bold text-[10px]">
-          Right Click
-        </kbd>{" "}
-        to scroll
+      {/* Tip */}
+      <div className="flex-none px-5 py-2 border-t border-gray-100 bg-white flex items-center justify-center text-xs text-gray-400 gap-2">
+        <MousePointer size={13} />
+        Drag cards between columns to update lead status
       </div>
 
       <LeadDetail
