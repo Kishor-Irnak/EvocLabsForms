@@ -20,10 +20,24 @@ import {
   DollarSign,
   Users,
   CheckCircle,
-  XCircle,
   Filter,
   Trash2,
   X,
+  Bell,
+  Star,
+  ArrowUpDown,
+  SlidersHorizontal,
+  Download,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  MoreHorizontal,
+  Pencil,
+  Table2,
+  ToggleRight,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "../components/ui-primitives";
 
@@ -38,20 +52,42 @@ const toDate = (value: any) => {
 };
 
 const formatDateLong = (value: any) => toDate(value).toLocaleString();
+const formatDateShort = (value: any) => {
+  const d = toDate(value);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
 
-// Helper function for status badge styling
-const getStatusBadgeClass = (status: LeadStatus) => {
+const getStatusBadge = (status: LeadStatus) => {
   switch (status) {
     case "leads":
-      return "bg-slate-100 text-slate-700 border-slate-300";
+      return {
+        label: "New Lead",
+        className: "bg-blue-50 text-blue-600 border-blue-100",
+      };
     case "contacted":
-      return "bg-blue-100 text-blue-700 border-blue-300";
+      return {
+        label: "Contacted",
+        className: "bg-purple-50 text-purple-600 border-purple-100",
+      };
     case "won":
-      return "bg-green-100 text-green-700 border-green-300";
+      return {
+        label: "Won",
+        className: "bg-green-50 text-green-600 border-green-100",
+      };
     case "lost":
-      return "bg-red-100 text-red-700 border-red-300";
+      return {
+        label: "Lost",
+        className: "bg-red-50 text-red-600 border-red-100",
+      };
     default:
-      return "bg-slate-100 text-slate-700 border-slate-300";
+      return {
+        label: "New Lead",
+        className: "bg-blue-50 text-blue-600 border-blue-100",
+      };
   }
 };
 
@@ -63,11 +99,9 @@ interface LeadData {
   timestamp: Timestamp | { seconds: number; nanoseconds: number } | string;
   status?: LeadStatus;
   collection?: string;
-  // Book Demo fields
   phoneNumber?: string;
   category?: string;
   revenueRange?: string;
-  // Contact Us fields
   workEmail?: string;
   email?: string;
   website?: string;
@@ -76,7 +110,185 @@ interface LeadData {
   message?: string;
 }
 
-// Lead Detail Modal
+// ── Header Bar ──────────────────────────────────────────────────────────────
+function DashboardHeader({ title }: { title: string }) {
+  return (
+    <div className="flex items-center justify-between px-8 py-5 bg-white border-b border-gray-100">
+      <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+        {title}
+      </h1>
+      <div className="flex items-center gap-3">
+        {/* Bookmark icon */}
+        <button className="p-2 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors">
+          <Star size={18} />
+        </button>
+        {/* Bell icon */}
+        <button className="p-2 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors relative">
+          <Bell size={18} />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white" />
+        </button>
+        {/* User Avatars */}
+        <div className="flex -space-x-2">
+          {["#f97316", "#3b82f6", "#8b5cf6", "#10b981"].map((color, i) => (
+            <div
+              key={i}
+              className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold"
+              style={{ backgroundColor: color }}
+            >
+              {["A", "B", "C", "D"][i]}
+            </div>
+          ))}
+          <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-gray-500 text-xs font-semibold">
+            +5
+          </div>
+        </div>
+        <button className="p-2 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors">
+          <UserPlus size={18} />
+        </button>
+        <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors">
+          <SlidersHorizontal size={15} />
+          Customize Widget
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────────────
+function Toolbar({
+  showStats,
+  onToggleStats,
+  onExport,
+}: {
+  showStats: boolean;
+  onToggleStats: () => void;
+  onExport: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 px-6 py-3 bg-white border-b border-gray-100">
+      {/* View Switcher */}
+      <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors">
+        <Table2 size={15} />
+        Table View
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className="text-gray-400"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {/* Filter */}
+      <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
+        <Filter size={14} />
+        Filter
+      </button>
+
+      {/* Sort */}
+      <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
+        <ArrowUpDown size={14} />
+        Sort
+      </button>
+
+      {/* Show Statistics Toggle */}
+      <button
+        onClick={onToggleStats}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+      >
+        Show Statistics
+        <div
+          className={cn(
+            "w-9 h-5 rounded-full transition-colors duration-200 flex items-center px-0.5",
+            showStats ? "bg-orange-500" : "bg-gray-300",
+          )}
+        >
+          <div
+            className={cn(
+              "w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200",
+              showStats ? "translate-x-4" : "translate-x-0",
+            )}
+          />
+        </div>
+      </button>
+
+      <div className="flex-1" />
+
+      {/* Customize */}
+      <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
+        <SlidersHorizontal size={14} />
+        Customize
+      </button>
+
+      {/* Export */}
+      <button
+        onClick={onExport}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+      >
+        <Download size={14} />
+        Export
+      </button>
+
+      {/* Add New */}
+      <button className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors">
+        <Plus size={15} />
+        Add New Lead
+      </button>
+    </div>
+  );
+}
+
+// ── Stat Card ─────────────────────────────────────────────────────────────────
+function StatCard({
+  label,
+  value,
+  change,
+  changeLabel,
+  positive,
+}: {
+  label: string;
+  value: string | number;
+  change?: string;
+  changeLabel?: string;
+  positive?: boolean;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 px-6 py-5 shadow-sm">
+      <p className="text-sm text-gray-500 font-medium flex items-center gap-1.5">
+        {label}
+        <span className="text-gray-300 cursor-default" title="Info">
+          ⓘ
+        </span>
+      </p>
+      <p className="text-3xl font-bold text-gray-900 mt-2 tracking-tight">
+        {value}
+      </p>
+      {change && (
+        <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1.5">
+          vs last month
+          <span
+            className={cn(
+              "font-semibold px-1.5 py-0.5 rounded-full text-[11px]",
+              positive
+                ? "text-green-600 bg-green-50"
+                : "text-red-500 bg-red-50",
+            )}
+          >
+            {positive ? "+" : ""}
+            {change}
+          </span>
+          {changeLabel && <span>{changeLabel}</span>}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Lead Detail Modal ─────────────────────────────────────────────────────────
 function LeadDetail({
   lead,
   isOpen,
@@ -94,7 +306,7 @@ function LeadDetail({
   if (!lead || !isOpen) return null;
 
   const statusOptions: { value: LeadStatus; label: string }[] = [
-    { value: "leads", label: "Leads" },
+    { value: "leads", label: "New Lead" },
     { value: "contacted", label: "Contacted" },
     { value: "won", label: "Won" },
     { value: "lost", label: "Lost" },
@@ -103,28 +315,26 @@ function LeadDetail({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
         onClick={onClose}
       />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="bg-[hsl(var(--card))] border border-[hsl(var(--card-border))] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6 space-y-6">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-[hsl(var(--foreground))]">
-                  {lead.name}
-                </h2>
+                <h2 className="text-xl font-bold text-gray-900">{lead.name}</h2>
                 <div className="flex flex-col gap-1 mt-1">
                   {(lead.workEmail || lead.email) && (
-                    <p className="text-sm text-[hsl(var(--muted-foreground))] flex items-center gap-2">
+                    <p className="text-sm text-gray-500 flex items-center gap-2">
                       <Mail size={14} /> {lead.workEmail || lead.email}
                     </p>
                   )}
                   {lead.phoneNumber && (
-                    <p className="text-sm text-[hsl(var(--muted-foreground))] flex items-center gap-2">
+                    <p className="text-sm text-gray-500 flex items-center gap-2">
                       <span className="text-xs font-bold">+91</span>{" "}
                       {lead.phoneNumber}
                     </p>
@@ -135,28 +345,26 @@ function LeadDetail({
                 {!showDeleteConfirm ? (
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="p-2 hover:bg-[hsl(var(--destructive))]/10 text-[hsl(var(--destructive))] rounded-lg transition-colors"
+                    className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
                     title="Delete lead"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={18} />
                   </button>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[hsl(var(--muted-foreground))]">
-                      Delete?
-                    </span>
+                    <span className="text-xs text-gray-500">Delete?</span>
                     <button
                       onClick={() => {
                         onDelete(lead.id);
                         onClose();
                       }}
-                      className="px-3 py-1.5 bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] rounded-md text-sm font-medium hover:opacity-90 transition-opacity"
+                      className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
                     >
                       Confirm
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="px-3 py-1.5 bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] rounded-md text-sm font-medium hover:bg-[hsl(var(--accent))] transition-colors"
+                      className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
                     >
                       Cancel
                     </button>
@@ -164,83 +372,80 @@ function LeadDetail({
                 )}
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-[hsl(var(--accent))] rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <X
-                    size={20}
-                    className="text-[hsl(var(--muted-foreground))]"
-                  />
+                  <X size={18} className="text-gray-500" />
                 </button>
               </div>
             </div>
 
             <div className="space-y-4">
+              {/* Status */}
               <div>
-                <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-2 block">
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 block">
                   Status
                 </label>
                 <div className="flex gap-2 flex-wrap">
-                  {statusOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        onStatusChange(lead.id, option.value);
-                        onClose();
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-md text-sm font-medium transition-colors border",
-                        lead.status === option.value
-                          ? getStatusBadgeClass(option.value)
-                          : "bg-white text-[hsl(var(--muted-foreground))] border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))]",
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
+                  {statusOptions.map((option) => {
+                    const badge = getStatusBadge(option.value);
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          onStatusChange(lead.id, option.value);
+                          onClose();
+                        }}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border",
+                          lead.status === option.value
+                            ? badge.className
+                            : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50",
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
+              {/* Info grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-1 block">
-                    Budget / Revenue / Category
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 block">
+                    Budget / Revenue
                   </label>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1">
                     {lead.budget && (
-                      <p className="text-sm text-[hsl(var(--foreground))] font-medium">
+                      <p className="text-sm text-gray-800 font-medium">
                         Budget: {lead.budget}
                       </p>
                     )}
                     {lead.revenueRange && (
-                      <p className="text-sm text-[hsl(var(--foreground))] font-medium">
+                      <p className="text-sm text-gray-800 font-medium">
                         Revenue: {lead.revenueRange}
                       </p>
                     )}
                     {lead.category && (
-                      <p className="text-sm text-[hsl(var(--foreground))]">
-                        Category:{" "}
-                        <span className="text-xs font-medium bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))] px-2 py-0.5 rounded-full">
-                          {lead.category}
-                        </span>
-                      </p>
+                      <span className="text-xs font-medium bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full w-fit">
+                        {lead.category}
+                      </span>
                     )}
                     {!lead.budget && !lead.revenueRange && !lead.category && (
-                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        N/A
-                      </p>
+                      <p className="text-sm text-gray-400">N/A</p>
                     )}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-1 block">
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 block">
                     Form Type
                   </label>
                   <span
                     className={cn(
-                      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                      "inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border",
                       lead.formType === "book-demo"
-                        ? "bg-white text-orange-600 border-orange-400"
-                        : "bg-white text-orange-700 border-orange-500",
+                        ? "bg-orange-50 text-orange-600 border-orange-200"
+                        : "bg-blue-50 text-blue-600 border-blue-200",
                     )}
                   >
                     {lead.formType === "book-demo" ? "Book Demo" : "Contact"}
@@ -250,14 +455,14 @@ function LeadDetail({
 
               {lead.website && (
                 <div>
-                  <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-1 block">
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 block">
                     Website
                   </label>
                   <a
                     href={lead.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-[hsl(var(--primary))] hover:opacity-80 text-sm"
+                    className="flex items-center gap-1.5 text-orange-500 hover:opacity-80 text-sm"
                   >
                     <ExternalLink size={14} />
                     <span className="truncate">{lead.website}</span>
@@ -267,31 +472,27 @@ function LeadDetail({
 
               {lead.goals && (
                 <div>
-                  <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-1 block">
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 block">
                     Goals
                   </label>
-                  <p className="text-sm text-[hsl(var(--foreground))]">
-                    {lead.goals}
-                  </p>
+                  <p className="text-sm text-gray-700">{lead.goals}</p>
                 </div>
               )}
 
               {lead.message && (
                 <div>
-                  <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-1 block">
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 block">
                     Message
                   </label>
-                  <p className="text-sm text-[hsl(var(--foreground))]">
-                    {lead.message}
-                  </p>
+                  <p className="text-sm text-gray-700">{lead.message}</p>
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wide mb-1 block">
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 block">
                   Submitted
                 </label>
-                <div className="flex items-center gap-1.5 text-sm text-[hsl(var(--muted-foreground))]">
+                <div className="flex items-center gap-1.5 text-sm text-gray-500">
                   <Calendar size={14} />
                   <span>
                     {formatDateLong(lead.createdAt || lead.timestamp)}
@@ -306,23 +507,22 @@ function LeadDetail({
   );
 }
 
+// ── Main Dashboard ────────────────────────────────────────────────────────────
 export const Dashboard: React.FC = () => {
   const [leads, setLeads] = useState<LeadData[]>([]);
   const [filteredLeads, setFilteredLeads] = useState<LeadData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<string>("");
-  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-    start: "",
-    end: "",
-  });
   const [formTypeFilter, setFormTypeFilter] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<LeadData | null>(null);
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [showStats, setShowStats] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
 
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        // Try common collection names
         const collectionNames = [
           "leads",
           "forms",
@@ -331,705 +531,533 @@ export const Dashboard: React.FC = () => {
           "formSubmissions",
         ];
         let leadsData: LeadData[] = [];
-        let lastError: any = null;
 
         for (const collectionName of collectionNames) {
           try {
-            console.log(`Trying collection: ${collectionName}`);
-            setDebugInfo(`Checking collection: ${collectionName}...`);
-
-            // First try with orderBy
-            try {
-              const q = query(
-                collection(db, collectionName),
-                orderBy("createdAt", "desc"),
-              );
-              const querySnapshot = await getDocs(q);
-
-              querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                console.log(`Found document in ${collectionName}:`, data);
-                leadsData.push({
-                  id: doc.id,
-                  ...data,
-                  collection: collectionName,
-                } as LeadData);
-              });
-
-              if (leadsData.length > 0) {
-                console.log(
-                  `Successfully loaded ${leadsData.length} leads from ${collectionName}`,
-                );
-                setDebugInfo(
-                  `Found ${leadsData.length} leads in collection: ${collectionName}`,
-                );
-                break;
-              }
-            } catch (orderByError: any) {
-              // If orderBy fails (maybe no index), try without it
-              console.log(
-                `orderBy failed for ${collectionName}, trying without orderBy:`,
-                orderByError.message,
-              );
-
-              const querySnapshot = await getDocs(
-                collection(db, collectionName),
-              );
-
-              querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                console.log(`Found document in ${collectionName}:`, data);
-                leadsData.push({
-                  id: doc.id,
-                  ...data,
-                  collection: collectionName,
-                } as LeadData);
-              });
-
-              // Sort manually by createdAt if available
-              if (leadsData.length > 0) {
-                leadsData.sort((a, b) => {
-                  const dateA = a.createdAt || a.timestamp;
-                  const dateB = b.createdAt || b.timestamp;
-                  if (!dateA || !dateB) return 0;
-                  const timeA =
-                    typeof dateA === "string"
-                      ? new Date(dateA).getTime()
-                      : (dateA as any).seconds
-                        ? (dateA as any).seconds * 1000
-                        : 0;
-                  const timeB =
-                    typeof dateB === "string"
-                      ? new Date(dateB).getTime()
-                      : (dateB as any).seconds
-                        ? (dateB as any).seconds * 1000
-                        : 0;
-                  return timeB - timeA;
-                });
-                console.log(
-                  `Successfully loaded ${leadsData.length} leads from ${collectionName} (without orderBy)`,
-                );
-                setDebugInfo(
-                  `Found ${leadsData.length} leads in collection: ${collectionName}`,
-                );
-                break;
-              }
-            }
-          } catch (err: any) {
-            console.log(
-              `Error with collection ${collectionName}:`,
-              err.message,
+            const q = query(
+              collection(db, collectionName),
+              orderBy("createdAt", "desc"),
             );
-            lastError = err;
-            continue;
+            const snapshot = await getDocs(q);
+            snapshot.forEach((d) =>
+              leadsData.push({
+                id: d.id,
+                ...d.data(),
+                collection: collectionName,
+              } as LeadData),
+            );
+            if (leadsData.length > 0) break;
+          } catch {
+            try {
+              const snapshot = await getDocs(collection(db, collectionName));
+              snapshot.forEach((d) =>
+                leadsData.push({
+                  id: d.id,
+                  ...d.data(),
+                  collection: collectionName,
+                } as LeadData),
+              );
+              if (leadsData.length > 0) {
+                leadsData.sort(
+                  (a, b) =>
+                    toDate(b.createdAt || b.timestamp).getTime() -
+                    toDate(a.createdAt || a.timestamp).getTime(),
+                );
+                break;
+              }
+            } catch {
+              continue;
+            }
           }
         }
 
-        if (leadsData.length === 0 && lastError) {
-          console.error(
-            "No data found in any collection. Last error:",
-            lastError,
-          );
-          setError(
-            `No leads found. Please check Firestore collection name. Tried: ${collectionNames.join(
-              ", ",
-            )}. Error: ${lastError.message}`,
-          );
-          setDebugInfo(
-            `Checked collections: ${collectionNames.join(", ")}. No data found.`,
-          );
-        } else if (leadsData.length === 0) {
-          setError(
-            `No leads found in any of the checked collections: ${collectionNames.join(
-              ", ",
-            )}`,
-          );
-          setDebugInfo(
-            `Checked collections: ${collectionNames.join(", ")}. No data found.`,
-          );
-        } else {
+        if (leadsData.length === 0)
+          setError("No leads found. Please check your Firestore collection.");
+        else {
           setLeads(leadsData);
           setFilteredLeads(leadsData);
-          setDebugInfo("");
         }
       } catch (err: any) {
-        console.error("Error fetching leads:", err);
         setError(`Failed to load leads: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
-
     fetchLeads();
   }, []);
 
   useEffect(() => {
     let filtered = leads;
-
-    // Filter by Date
-    if (dateRange.start && dateRange.end) {
-      const start = new Date(dateRange.start).getTime();
-      const end = new Date(dateRange.end).getTime() + 86400000;
-
-      filtered = filtered.filter((lead) => {
-        const leadDate = lead.createdAt || lead.timestamp;
-        if (!leadDate) return false;
-
-        const time =
-          typeof leadDate === "string"
-            ? new Date(leadDate).getTime()
-            : (leadDate as any).seconds
-              ? (leadDate as any).seconds * 1000
-              : 0;
-        return time >= start && time <= end;
-      });
-    }
-
-    // Filter by Form Type
-    if (formTypeFilter !== "all") {
-      filtered = filtered.filter((lead) => lead.formType === formTypeFilter);
-    }
-
+    if (formTypeFilter !== "all")
+      filtered = filtered.filter((l) => l.formType === formTypeFilter);
     setFilteredLeads(filtered);
-  }, [dateRange, formTypeFilter, leads]);
+    setCurrentPage(1);
+  }, [formTypeFilter, leads]);
 
   const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
-    try {
-      // Update local state immediately
-      setLeads((prevLeads) =>
-        prevLeads.map((lead) =>
-          lead.id === leadId ? { ...lead, status: newStatus } : lead,
-        ),
-      );
-
-      // Try to update in Firestore (find the collection)
-      const collectionNames = [
-        "leads",
-        "forms",
-        "submissions",
-        "contacts",
-        "formSubmissions",
-      ];
-      const lead = leads.find((l) => l.id === leadId);
-      const preferredOrder = lead?.collection
-        ? [lead.collection, ...collectionNames]
-        : collectionNames;
-
-      let updated = false;
-      for (const collectionName of preferredOrder) {
-        try {
-          const leadRef = doc(db, collectionName, leadId);
-          await updateDoc(leadRef, { status: newStatus });
-          updated = true;
-          console.log(
-            `Updated status for ${leadId} in ${collectionName} to ${newStatus}`,
-          );
-          break;
-        } catch (err) {
-          continue;
-        }
+    setLeads((prev) =>
+      prev.map((l) => (l.id === leadId ? { ...l, status: newStatus } : l)),
+    );
+    const lead = leads.find((l) => l.id === leadId);
+    const names = lead?.collection
+      ? [lead.collection, "leads", "forms", "submissions"]
+      : ["leads", "forms", "submissions"];
+    for (const n of names) {
+      try {
+        await updateDoc(doc(db, n, leadId), { status: newStatus });
+        break;
+      } catch {
+        continue;
       }
-
-      if (!updated) {
-        console.warn(
-          "Could not find document to update status in any known collection",
-        );
-      }
-    } catch (err) {
-      console.error("Error updating status:", err);
     }
   };
 
   const handleDelete = async (leadId: string) => {
-    try {
-      // Update local state immediately
-      setLeads((prevLeads) => prevLeads.filter((lead) => lead.id !== leadId));
-
-      // Try to delete from Firestore (find the collection)
-      const collectionNames = [
-        "leads",
-        "forms",
-        "submissions",
-        "contacts",
-        "formSubmissions",
-      ];
-      const lead = leads.find((l) => l.id === leadId);
-      const preferredOrder = lead?.collection
-        ? [lead.collection, ...collectionNames]
-        : collectionNames;
-
-      let deleted = false;
-      for (const collectionName of preferredOrder) {
-        try {
-          const leadRef = doc(db, collectionName, leadId);
-          await deleteDoc(leadRef);
-          deleted = true;
-          console.log(`Deleted document ${leadId} from ${collectionName}`);
-          break;
-        } catch (err) {
-          console.log(`Failed to delete from ${collectionName}:`, err);
-          continue;
-        }
+    setLeads((prev) => prev.filter((l) => l.id !== leadId));
+    const lead = leads.find((l) => l.id === leadId);
+    const names = lead?.collection
+      ? [lead.collection, "leads", "forms", "submissions"]
+      : ["leads", "forms", "submissions"];
+    for (const n of names) {
+      try {
+        await deleteDoc(doc(db, n, leadId));
+        break;
+      } catch {
+        continue;
       }
-
-      if (!deleted) {
-        console.warn(
-          "Could not find document to delete in any known collection",
-        );
-      }
-    } catch (err) {
-      console.error("Error deleting lead:", err);
     }
   };
 
-  const formatDate = (timestamp: any) => {
-    if (!timestamp) return "";
-
-    // Handle Firestore Timestamp
-    if (timestamp.seconds) {
-      return new Date(timestamp.seconds * 1000).toLocaleString();
-    }
-
-    // Handle string date
-    return new Date(timestamp).toLocaleString();
+  const toggleRow = (id: string) => {
+    setSelectedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
-  const getStats = () => {
-    const total = filteredLeads.length;
-    const contacted = filteredLeads.filter(
-      (l) => l.status === "contacted",
-    ).length;
-    const won = filteredLeads.filter((l) => l.status === "won").length;
-    return { total, contacted, won };
+  const toggleAll = () => {
+    if (selectedRows.size === pageLeads.length) setSelectedRows(new Set());
+    else setSelectedRows(new Set(pageLeads.map((l) => l.id)));
+  };
+
+  const handleExport = () => {
+    const rows = filteredLeads.map((l) => [
+      l.name,
+      l.workEmail || l.email || "",
+      l.formType,
+      l.status || "leads",
+      l.budget || l.revenueRange || "",
+    ]);
+    const csv = [
+      ["Name", "Email", "Form Type", "Status", "Budget/Revenue"],
+      ...rows,
+    ]
+      .map((r) => r.join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "leads.csv";
+    a.click();
+  };
+
+  const totalPages = Math.ceil(filteredLeads.length / rowsPerPage);
+  const pageLeads = filteredLeads.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage,
+  );
+
+  const stats = {
+    total: filteredLeads.length,
+    contacted: filteredLeads.filter((l) => l.status === "contacted").length,
+    won: filteredLeads.filter((l) => l.status === "won").length,
+    avgBudget: filteredLeads.filter((l) => l.budget).length,
   };
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[hsl(var(--background))]">
-        <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--muted-foreground))]" />
+      <div className="flex h-screen items-center justify-center bg-[#f2f3f7]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+          <p className="text-sm text-gray-500">Loading leads...</p>
+        </div>
       </div>
     );
   }
 
-  const stats = getStats();
-
   return (
     <>
-      <div className="flex-1 min-h-screen bg-[hsl(var(--background))] p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[hsl(var(--foreground))]">
-              Leads
-            </h1>
-            <p className="text-sm sm:text-base text-[hsl(var(--muted-foreground))] mt-1">
-              Manage and view your form submissions.
-            </p>
-          </div>
+      <div className="flex flex-col min-h-screen bg-[#f2f3f7]">
+        {/* Header */}
+        <DashboardHeader title="Leads" />
 
-          <div className="flex flex-col xl:flex-row items-center gap-4">
-            {/* Form Type Filter */}
-            <div className="flex items-center gap-2 bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg p-1">
-              <div className="flex items-center gap-2 px-2 border-r border-[hsl(var(--border))] mr-1">
-                <Filter
-                  size={14}
-                  className="text-[hsl(var(--muted-foreground))]"
-                />
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                  Type:
-                </span>
-              </div>
-              <select
-                className="bg-transparent text-sm border-none focus:ring-0 text-[hsl(var(--foreground))] cursor-pointer pr-8 py-1"
-                value={formTypeFilter}
-                onChange={(e) => setFormTypeFilter(e.target.value)}
-              >
-                <option value="all">All Submissions</option>
-                <option value="book-demo">Book Demo</option>
-                <option value="contact">Contact Us</option>
-              </select>
-            </div>
+        {/* Toolbar */}
+        <Toolbar
+          showStats={showStats}
+          onToggleStats={() => setShowStats((s) => !s)}
+          onExport={handleExport}
+        />
 
-            {/* Date Filter */}
-            <div className="flex items-center gap-2 bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg p-1">
-              <div className="flex items-center gap-2 px-2">
-                <Calendar
-                  size={14}
-                  className="text-[hsl(var(--muted-foreground))]"
-                />
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                  Filter by Date:
-                </span>
-              </div>
-              <input
-                type="date"
-                className="bg-transparent text-sm border-none focus:ring-0 text-[hsl(var(--foreground))] dark:text-[hsl(var(--foreground))] [color-scheme:light] dark:[color-scheme:dark] placeholder:text-[hsl(var(--muted-foreground))]"
-                value={dateRange.start}
-                onChange={(e) =>
-                  setDateRange((prev) => ({ ...prev, start: e.target.value }))
-                }
+        {/* Content area */}
+        <div className="flex-1 p-6 space-y-4">
+          {/* Stats Cards */}
+          {showStats && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <StatCard
+                label="Total Leads"
+                value={stats.total}
+                change="3 lead"
+                changeLabel=""
+                positive
               />
-              <span className="text-[hsl(var(--muted-foreground))]">-</span>
-              <input
-                type="date"
-                className="bg-transparent text-sm border-none focus:ring-0 text-[hsl(var(--foreground))] dark:text-[hsl(var(--foreground))] [color-scheme:light] dark:[color-scheme:dark] placeholder:text-[hsl(var(--muted-foreground))]"
-                value={dateRange.end}
-                onChange={(e) =>
-                  setDateRange((prev) => ({ ...prev, end: e.target.value }))
-                }
+              <StatCard
+                label="Contacted"
+                value={stats.contacted}
+                change="9%"
+                positive
               />
-              {(dateRange.start || dateRange.end) && (
-                <button
-                  onClick={() => setDateRange({ start: "", end: "" })}
-                  className="p-1 hover:bg-[hsl(var(--accent))] rounded-md text-[hsl(var(--muted-foreground))]"
-                >
-                  <XCircle size={14} />
-                </button>
-              )}
+              <StatCard label="Won" value={stats.won} change="7%" positive />
+              <StatCard
+                label="Avg. Monthly Conversions"
+                value={stats.avgBudget}
+                change="5%"
+                positive
+              />
             </div>
-          </div>
-        </div>
+          )}
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-6 rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card))] shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                  Total Leads
-                </p>
-                <h3 className="text-2xl font-bold text-[hsl(var(--foreground))] mt-2">
-                  {stats.total}
-                </h3>
-              </div>
-              <div className="p-3 bg-[hsl(var(--primary))]/10 rounded-full">
-                <Users className="w-6 h-6 text-[hsl(var(--primary))]" />
-              </div>
+          {/* Error */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">
+              {error}
             </div>
-          </div>
-          <div className="p-6 rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card))] shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                  Contacted
-                </p>
-                <h3 className="text-2xl font-bold text-[hsl(var(--foreground))] mt-2">
-                  {stats.contacted}
-                </h3>
-              </div>
-              <div className="p-3 bg-orange-500/10 rounded-full">
-                <Mail className="w-6 h-6 text-orange-500" />
-              </div>
-            </div>
-          </div>
-          <div className="p-6 rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card))] shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                  Won
-                </p>
-                <h3 className="text-2xl font-bold text-[hsl(var(--foreground))] mt-2">
-                  {stats.won}
-                </h3>
-              </div>
-              <div className="p-3 bg-orange-600/10 rounded-full">
-                <CheckCircle className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-          </div>
-        </div>
+          )}
 
-        {error && (
-          <div className="p-4 rounded-md bg-[hsl(var(--destructive))]/10 text-[hsl(var(--destructive-foreground))] border border-[hsl(var(--destructive))]/20">
-            <p className="font-semibold mb-2">Error loading leads</p>
-            <p className="text-sm">{error}</p>
-            {debugInfo && (
-              <p className="text-xs mt-2 opacity-75">{debugInfo}</p>
-            )}
-            <p className="text-xs mt-2 opacity-75">
-              Please check: 1) Firestore collection name, 2) Firestore security
-              rules allow read access, 3) Browser console for detailed errors
-            </p>
-          </div>
-        )}
-
-        {/* Desktop Table View */}
-        <div className="hidden lg:block rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card))] shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 border-b border-[hsl(var(--border))]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name & Contact
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Details
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Budget / Revenue
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Submitted
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[hsl(var(--border))]">
-                {filteredLeads.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-6 py-8 text-center text-[hsl(var(--muted-foreground))]"
-                    >
-                      No leads found matching your criteria.
-                    </td>
+          {/* Table Card */}
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100 bg-white">
+                    <th className="px-4 py-3 text-left w-10">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-1 cursor-pointer"
+                        checked={
+                          selectedRows.size === pageLeads.length &&
+                          pageLeads.length > 0
+                        }
+                        onChange={toggleAll}
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Lead
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Email / Phone
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Budget
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Submitted
+                    </th>
+                    <th className="px-4 py-3 w-10">
+                      <Plus
+                        size={14}
+                        className="text-gray-300 cursor-pointer hover:text-gray-500 mx-auto"
+                      />
+                    </th>
                   </tr>
-                ) : (
-                  filteredLeads.map((lead) => (
-                    <tr
-                      key={lead.id}
-                      className="hover:bg-[hsl(var(--accent))]/40 transition-colors cursor-pointer"
-                      onClick={() => setSelectedLead(lead)}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-[hsl(var(--foreground))]">
-                          {lead.name}
-                        </div>
-                        {(lead.workEmail || lead.email) && (
-                          <div className="flex items-center gap-1.5 text-[hsl(var(--muted-foreground))] mt-1">
-                            <Mail size={12} />
-                            <span>{lead.workEmail || lead.email}</span>
-                          </div>
-                        )}
-                        {lead.phoneNumber && (
-                          <div className="flex items-center gap-1.5 text-[hsl(var(--muted-foreground))] mt-1">
-                            <span className="text-xs font-bold bg-[hsl(var(--accent))] px-1 rounded text-[hsl(var(--foreground))] opacity-70">
-                              +91
-                            </span>
-                            <span>{lead.phoneNumber}</span>
-                          </div>
-                        )}
-                        {lead.website && (
-                          <a
-                            href={lead.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 text-[hsl(var(--primary))] hover:opacity-80 mt-1 w-fit"
-                          >
-                            <ExternalLink size={12} />
-                            <span className="truncate max-w-[150px]">
-                              {lead.website.replace(/^https?:\/\//, "")}
-                            </span>
-                          </a>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={cn(
-                            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                            lead.formType === "book-demo"
-                              ? "bg-white text-orange-600 border-orange-400"
-                              : "bg-white text-orange-700 border-orange-500",
-                          )}
-                        >
-                          {lead.formType === "book-demo"
-                            ? "Book Demo"
-                            : "Contact"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {lead.category && (
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <span className="text-[10px] uppercase font-bold text-[hsl(var(--muted-foreground))]">
-                              Category:
-                            </span>
-                            <span className="text-xs font-medium bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))] px-2 py-0.5 rounded-full">
-                              {lead.category}
-                            </span>
-                          </div>
-                        )}
-                        {lead.goals && (
-                          <div className="flex items-start gap-2">
-                            <Target
-                              size={14}
-                              className="mt-0.5 text-[hsl(var(--muted-foreground))] shrink-0"
-                            />
-                            <p className="text-[hsl(var(--foreground))] line-clamp-2 max-w-[300px]">
-                              {lead.goals}
-                            </p>
-                          </div>
-                        )}
-                        {lead.message && (
-                          <div className="flex items-start gap-2">
-                            <MessageSquare
-                              size={14}
-                              className="mt-0.5 text-[hsl(var(--muted-foreground))] shrink-0"
-                            />
-                            <p className="text-[hsl(var(--foreground))] line-clamp-2 max-w-[300px]">
-                              {lead.message}
-                            </p>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-[hsl(var(--foreground))] font-medium">
-                          {(lead.budget || lead.revenueRange) && (
-                            <DollarSign
-                              size={14}
-                              className="text-[hsl(var(--muted-foreground))]"
-                            />
-                          )}
-                          {lead.budget || lead.revenueRange || "N/A"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={cn(
-                            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                            getStatusBadgeClass(lead.status || "leads"),
-                          )}
-                        >
-                          {lead.status === "leads" && "Leads"}
-                          {lead.status === "contacted" && "Contacted"}
-                          {lead.status === "won" && "Won"}
-                          {lead.status === "lost" && "Lost"}
-                          {!lead.status && "Leads"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-[hsl(var(--muted-foreground))] whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <Calendar size={14} />
-                          {formatDate(lead.createdAt || lead.timestamp)}
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {pageLeads.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-4 py-16 text-center text-gray-400"
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <Users size={32} className="text-gray-200" />
+                          <p className="text-sm">No leads found</p>
                         </div>
                       </td>
                     </tr>
-                  ))
+                  ) : (
+                    pageLeads.map((lead) => {
+                      const badge = getStatusBadge(lead.status || "leads");
+                      const isSelected = selectedRows.has(lead.id);
+                      return (
+                        <tr
+                          key={lead.id}
+                          className={cn(
+                            "transition-colors cursor-pointer group",
+                            isSelected
+                              ? "bg-orange-50/50"
+                              : "hover:bg-gray-50/70",
+                          )}
+                          onClick={() => setSelectedLead(lead)}
+                        >
+                          {/* Checkbox */}
+                          <td
+                            className="px-4 py-3.5"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleRow(lead.id);
+                            }}
+                          >
+                            <div className="relative">
+                              {isSelected && (
+                                <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 w-0.5 h-6 bg-orange-500 rounded-r-full" />
+                              )}
+                              <input
+                                type="checkbox"
+                                className="rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-1 cursor-pointer"
+                                checked={isSelected}
+                                onChange={() => toggleRow(lead.id)}
+                              />
+                            </div>
+                          </td>
+
+                          {/* Name */}
+                          <td className="px-4 py-3.5">
+                            <span className="font-medium text-gray-800">
+                              {lead.name}
+                            </span>
+                          </td>
+
+                          {/* Email/Phone */}
+                          <td className="px-4 py-3.5">
+                            <div className="space-y-0.5">
+                              {(lead.workEmail || lead.email) && (
+                                <p className="text-gray-500 text-sm">
+                                  {lead.workEmail || lead.email}
+                                </p>
+                              )}
+                              {lead.phoneNumber && (
+                                <p className="text-gray-400 text-xs">
+                                  +91 {lead.phoneNumber}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Type */}
+                          <td className="px-4 py-3.5">
+                            <span
+                              className={cn(
+                                "inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border",
+                                lead.formType === "book-demo"
+                                  ? "bg-orange-50 text-orange-600 border-orange-200"
+                                  : "bg-blue-50 text-blue-600 border-blue-200",
+                              )}
+                            >
+                              {lead.formType === "book-demo"
+                                ? "Book Demo"
+                                : "Contact"}
+                            </span>
+                          </td>
+
+                          {/* Budget */}
+                          <td className="px-4 py-3.5">
+                            <span className="text-gray-700 font-medium">
+                              {lead.budget || lead.revenueRange || (
+                                <span className="text-gray-300">—</span>
+                              )}
+                            </span>
+                          </td>
+
+                          {/* Status */}
+                          <td className="px-4 py-3.5">
+                            <span
+                              className={cn(
+                                "inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border",
+                                badge.className,
+                              )}
+                            >
+                              {badge.label}
+                            </span>
+                          </td>
+
+                          {/* Date */}
+                          <td className="px-4 py-3.5 text-gray-400 text-sm whitespace-nowrap">
+                            {formatDateShort(lead.createdAt || lead.timestamp)}
+                          </td>
+
+                          {/* Actions */}
+                          <td
+                            className="px-4 py-3.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button className="p-1 rounded-md text-gray-300 hover:text-gray-600 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100">
+                              <MoreHorizontal size={15} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Selection bar */}
+            {selectedRows.size > 0 && (
+              <div className="flex items-center gap-3 px-5 py-2.5 bg-gray-50 border-t border-gray-100">
+                <span className="text-sm font-medium text-gray-600">
+                  {selectedRows.size} Selected
+                </span>
+                <div className="w-px h-4 bg-gray-200" />
+                <button className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                  <SlidersHorizontal size={13} /> Apply Code
+                </button>
+                <button className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                  <Pencil size={13} /> Edit Info
+                </button>
+                <button
+                  onClick={() => {
+                    selectedRows.forEach((id) => handleDelete(id));
+                    setSelectedRows(new Set());
+                  }}
+                  className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors"
+                >
+                  <Trash2 size={13} /> Delete
+                </button>
+                <div className="flex-1" />
+                <button
+                  className="p-1 rounded text-gray-400 hover:text-gray-600"
+                  onClick={() => setSelectedRows(new Set())}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-white">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>Showing per page</span>
+                <select className="border border-gray-200 rounded-lg px-2 py-1 text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-orange-400">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                >
+                  <ChevronsLeft size={15} />
+                </button>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                >
+                  <ChevronLeft size={15} />
+                </button>
+
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  let page = i + 1;
+                  if (totalPages > 5 && currentPage > 3)
+                    page = currentPage - 2 + i;
+                  if (page > totalPages) return null;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={cn(
+                        "w-8 h-8 rounded-lg text-sm font-medium transition-colors",
+                        currentPage === page
+                          ? "bg-orange-500 text-white"
+                          : "text-gray-500 hover:bg-gray-100",
+                      )}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+
+                {totalPages > 5 && (
+                  <>
+                    <span className="text-gray-400 px-1">...</span>
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="w-8 h-8 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
                 )}
-              </tbody>
-            </table>
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                >
+                  <ChevronRight size={15} />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                >
+                  <ChevronsRight size={15} />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>Go to page</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={totalPages}
+                  className="w-14 border border-gray-200 rounded-lg px-2 py-1 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const val = parseInt(
+                        (e.target as HTMLInputElement).value,
+                      );
+                      if (val >= 1 && val <= totalPages) setCurrentPage(val);
+                    }
+                  }}
+                />
+                <button
+                  className="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors"
+                  onClick={() => {
+                    const input = document.querySelector<HTMLInputElement>(
+                      'input[type="number"]',
+                    );
+                    if (input) {
+                      const val = parseInt(input.value);
+                      if (val >= 1 && val <= totalPages) setCurrentPage(val);
+                    }
+                  }}
+                >
+                  Go &rsaquo;
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Mobile Card View */}
-        <div className="lg:hidden space-y-4">
-          {filteredLeads.length === 0 ? (
-            <div className="rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card))] p-8 text-center text-[hsl(var(--muted-foreground))]">
-              No leads found matching your criteria.
-            </div>
-          ) : (
-            filteredLeads.map((lead) => (
-              <div
-                key={lead.id}
-                className="rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card))] shadow-sm p-4 space-y-3 cursor-pointer active:scale-[0.98] transition-transform"
-                onClick={() => setSelectedLead(lead)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-[hsl(var(--foreground))] text-base">
-                      {lead.name}
-                    </h3>
-                    {(lead.workEmail || lead.email) && (
-                      <div className="flex items-center gap-1.5 text-[hsl(var(--muted-foreground))] mt-1 text-sm">
-                        <Mail size={14} />
-                        <span className="truncate">
-                          {lead.workEmail || lead.email}
-                        </span>
-                      </div>
-                    )}
-                    {lead.phoneNumber && (
-                      <div className="flex items-center gap-1.5 text-[hsl(var(--muted-foreground))] mt-1 text-sm">
-                        <span className="text-xs font-bold">+91</span>
-                        <span>{lead.phoneNumber}</span>
-                      </div>
-                    )}
-                  </div>
-                  <span
-                    className={cn(
-                      "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border shrink-0",
-                      lead.formType === "book-demo"
-                        ? "bg-white text-orange-600 border-orange-400"
-                        : "bg-white text-orange-700 border-orange-500",
-                    )}
-                  >
-                    {lead.formType === "book-demo" ? "Book Demo" : "Contact"}
-                  </span>
-                </div>
-
-                {lead.website && (
-                  <a
-                    href={lead.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-[hsl(var(--primary))] hover:opacity-80 text-sm"
-                  >
-                    <ExternalLink size={14} />
-                    <span className="truncate">
-                      {lead.website.replace(/^https?:\/\//, "")}
-                    </span>
-                  </a>
-                )}
-
-                {(lead.goals || lead.message || lead.category) && (
-                  <div className="space-y-2">
-                    {lead.category && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] uppercase font-bold text-[hsl(var(--muted-foreground))]">
-                          Category:
-                        </span>
-                        <span className="text-xs font-medium bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))] px-2 py-0.5 rounded-full">
-                          {lead.category}
-                        </span>
-                      </div>
-                    )}
-                    {lead.goals && (
-                      <div className="flex items-start gap-2">
-                        <Target
-                          size={14}
-                          className="mt-0.5 text-[hsl(var(--muted-foreground))] shrink-0"
-                        />
-                        <p className="text-[hsl(var(--foreground))] text-sm">
-                          {lead.goals}
-                        </p>
-                      </div>
-                    )}
-                    {lead.message && (
-                      <div className="flex items-start gap-2">
-                        <MessageSquare
-                          size={14}
-                          className="mt-0.5 text-[hsl(var(--muted-foreground))] shrink-0"
-                        />
-                        <p className="text-[hsl(var(--foreground))] text-sm">
-                          {lead.message}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between pt-2 border-t border-[hsl(var(--border))]">
-                  <div className="flex items-center gap-1.5 text-[hsl(var(--foreground))] font-medium text-sm">
-                    {(lead.budget || lead.revenueRange) && (
-                      <DollarSign
-                        size={14}
-                        className="text-[hsl(var(--muted-foreground))]"
-                      />
-                    )}
-                    {lead.budget || lead.revenueRange || "N/A"}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[hsl(var(--muted-foreground))] text-xs">
-                    <Calendar size={12} />
-                    {formatDate(lead.createdAt || lead.timestamp)}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
       </div>
+
+      {/* Detail Modal */}
       <LeadDetail
         lead={selectedLead}
         isOpen={!!selectedLead}
