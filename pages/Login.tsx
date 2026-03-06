@@ -31,7 +31,7 @@ export function Login() {
         <div>
           <div className="w-56 h-20 mx-auto mb-8 bg-black rounded-xl p-4 flex items-center justify-center shadow-sm">
             <img
-              src="EvocLab_Logo.png"
+              src="/EvocLab_Logo.png"
               alt="Evoc Labs"
               className="max-w-full max-h-full object-contain"
             />
