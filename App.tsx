@@ -32,7 +32,7 @@ function MainLayout() {
         </button>
         <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center shrink-0">
           <img
-            src="/evoclabs_mini_logo.png"
+            src="evoclabs_mini_logo.png"
             alt="Logo"
             className="w-full h-full object-contain"
           />

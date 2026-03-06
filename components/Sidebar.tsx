@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
               <img
-                src="/evoclabs_mini_logo.png"
+                src="evoclabs_mini_logo.png"
                 alt="Evoc Labs"
                 className="w-full h-full object-contain"
               />
@@ -156,7 +156,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           >
             <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-gray-100">
               <img
-                src="/evoclabs_mini_logo.png"
+                src="evoclabs_mini_logo.png"
                 alt="Admin"
                 className="w-full h-full object-contain"
               />
