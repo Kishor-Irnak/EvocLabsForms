@@ -30,7 +30,7 @@ function MainLayout() {
         >
           <Menu size={20} />
         </button>
-        <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-md bg-black overflow-hidden flex items-center justify-center shrink-0 p-1">
           <img
             src="evoclabs_mini_logo.png"
             alt="Logo"

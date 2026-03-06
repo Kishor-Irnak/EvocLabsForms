@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Brand */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-black overflow-hidden flex items-center justify-center shrink-0 p-1">
               <img
                 src="evoclabs_mini_logo.png"
                 alt="Evoc Labs"
@@ -154,7 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             onClick={() => setShowLogoutDialog(true)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group"
           >
-            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-gray-100">
+            <div className="w-8 h-8 rounded-full bg-black overflow-hidden flex items-center justify-center shrink-0 border border-gray-800 p-1.5">
               <img
                 src="evoclabs_mini_logo.png"
                 alt="Admin"
