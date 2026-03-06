@@ -30,8 +30,12 @@ function MainLayout() {
         >
           <Menu size={20} />
         </button>
-        <div className="w-7 h-7 rounded-md bg-gray-900 flex items-center justify-center text-white text-xs font-bold">
-          EL
+        <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center shrink-0">
+          <img
+            src="/evoclabs_mini_logo.png"
+            alt="Logo"
+            className="w-full h-full object-contain"
+          />
         </div>
         <span className="font-bold text-gray-900">Evoc Labs CRM</span>
       </div>
