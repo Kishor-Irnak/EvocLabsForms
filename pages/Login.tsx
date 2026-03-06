@@ -29,8 +29,12 @@ export function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg border border-gray-100">
         <div>
-          <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center text-white text-xl font-bold mx-auto mb-4">
-            EL
+          <div className="w-48 h-16 mx-auto mb-6 flex items-center justify-center">
+            <img
+              src="/EvocLab_Logo.png"
+              alt="Evoc Labs"
+              className="max-w-full max-h-full object-contain"
+            />
           </div>
           <h2 className="text-center text-3xl font-extrabold text-gray-900">
             Sign in to Evoc Labs
